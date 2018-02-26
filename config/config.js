@@ -1,0 +1,1 @@
+module.exports.SEED = '@este-es-el-Seed-2018'
