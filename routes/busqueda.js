@@ -6,15 +6,56 @@ var Hospital = require('../models/hospital');
 var Medico = require('../models/medico');
 var Usuario = require('../models/usuario');
 
+// ===============================================
+// Busqueda coleccion
+// ===============================================
+app.get('/coleccion/:tabla/:busqueda', (req, res) => {
+    var busqueda = req.params.busqueda;
+    var tabla = req.params.tabla;
+    var regex = new RegExp( busqueda, 'i');
+
+    var promesa;
+
+    switch (tabla) {
+        case 'usuarios':
+            promesa = buscarUsuarios( regex);
+            break;
+        case 'medicos':
+            promesa = buscarMedicos( regex);
+            break;
+        case 'hospitales':
+            promesa = buscarHospitales( regex);
+            break;
+    
+        default:
+            return res.status(400).json({
+                ok: false,
+                mensaje: 'los tipos de busqueda solo son: usuarios, medicos y hospitales',
+                error: {message: 'tipo de tabla/coleccion no válido'}
+            });
+            break;
+    }
+
+    promesa.then(data => {
+        res.status(200).json({
+            ok: true,
+            [tabla]: data
+        });
+    })
+});
+
+// ===============================================
+// Busqueda general
+// ===============================================
 app.get('/todo/:busqueda', (req, res, next) => {
 
     var busqueda = req.params.busqueda;
     var regex = new RegExp( busqueda, 'i');
 
     Promise.all([ 
-            buscarHospitales(busqueda, regex),
-            buscarMedico(busqueda, regex),
-            buscarUsuarios(busqueda, regex)
+            buscarHospitales( regex),
+            buscarMedicos( regex),
+            buscarUsuarios( regex)
         ])
         .then(respuestas => {
             res.status(200).json({
@@ -28,7 +69,11 @@ app.get('/todo/:busqueda', (req, res, next) => {
     
 });
 
-function buscarHospitales(busqueda, regex) {
+// ===============================================
+// Funciones que devuelven Promesas
+// ===============================================
+
+function buscarHospitales( regex) {
     
     return new Promise(( resolve, reject ) => {
 
@@ -48,7 +93,7 @@ function buscarHospitales(busqueda, regex) {
 
 }
 
-function buscarMedico(busqueda, regex) {
+function buscarMedicos( regex) {
     
     return new Promise(( resolve, reject ) => {
 
@@ -67,8 +112,7 @@ function buscarMedico(busqueda, regex) {
 
 }
 
-
-function buscarUsuarios(busqueda, regex) {
+function buscarUsuarios( regex) {
     
     return new Promise(( resolve, reject ) => {
 
