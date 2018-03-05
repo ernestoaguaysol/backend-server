@@ -76,19 +76,23 @@ app.put('/:tipo/:id', (req, res, next) => {
     
 });
 
-function subirPorTipo(tipo, id, path, nombreArchivo, res) {
+function subirPorTipo(tipos, id, path, nombreArchivo, res) {
     
     var tipoColeccion;
 
-    switch (tipo) {
+    var tipo;
+    switch (tipos) {
         case 'hospitales':
             tipoColeccion = Hospital;
+            tipo = 'hospital';
             break;
         case 'medicos':
             tipoColeccion = Medico;
+            tipo = 'medico';
             break;
         case 'usuarios':
             tipoColeccion = Usuario;
+            tipo = 'usuario';
             break;
         default:
             return;
@@ -107,7 +111,7 @@ function subirPorTipo(tipo, id, path, nombreArchivo, res) {
             });
         } else {
         
-            var pathViejo = `./uploads/${ tipo }/${resultado.img}`;
+            var pathViejo = `./uploads/${ tipos }/${resultado.img}`;
             
             // Si existe, Elimino la imagen vieja
             if (fs.existsSync(pathViejo)) {
